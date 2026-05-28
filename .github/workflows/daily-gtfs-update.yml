@@ -1,0 +1,16 @@
+name: Daily GTFS Update
+
+on:
+  schedule:
+    - cron: '0 5 * * *'  # 5:00 AM UTC (7:00 AM hora española en verano)
+  workflow_dispatch:       # Permite lanzarlo manualmente desde GitHub
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel Deploy
+        run: |
+          curl -s -X POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}" \
+            --fail \
+            --show-error

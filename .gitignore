@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# GTFS data — generado en build, no se versiona
+data/gtfs/
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# Test coverage
+coverage/
+
+# TypeScript build cache
+tsconfig.tsbuildinfo
+next-env.d.ts
+
+# Archivos sueltos en la raíz (artefactos de desarrollo)
+/*.csv
+/*.rdf
+/bus_icon.png
+/bus_icon2.png
+
+# Misc
+.DS_Store
+*.pem
+google-maps-api-key.txt
