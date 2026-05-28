@@ -7,15 +7,19 @@ import { createQueryWrapper } from '@/test/queryWrapper'
 import { useEMTStore } from '../store/emtStore'
 import { MapaEMT } from './MapaEMT'
 
-vi.mock('@vis.gl/react-google-maps', () => ({
-  APIProvider: ({ children }: { children: React.ReactNode }) => <div data-testid="api-provider">{children}</div>,
-  Map: ({ children }: { children: React.ReactNode }) => <div data-testid="google-map">{children}</div>,
-  AdvancedMarker: ({ title, children }: { title: string; children: React.ReactNode }) => (
-    <div data-testid="bus-marker" aria-label={title}>{children}</div>
+vi.mock('react-leaflet', () => ({
+  MapContainer: ({ children }: { children: React.ReactNode }) => <div data-testid="google-map">{children}</div>,
+  TileLayer: () => null,
+  Marker: ({ title, children }: { title?: string; children?: React.ReactNode }) => (
+    <div data-testid="bus-marker" aria-label={title ?? ''}>{children}</div>
   ),
   Polyline: () => null,
-  InfoWindow: () => null,
-  useMap: () => null,
+  Popup: () => null,
+  useMap: () => ({ getZoom: () => 13, on: () => {}, off: () => {}, fitBounds: () => {} }),
+}))
+
+vi.mock('leaflet', () => ({
+  default: { divIcon: () => ({}), latLngBounds: () => ({}) },
 }))
 
 function makeBus(codBus: string, codLinea: string, lat = 36.7, lng = -4.4) {

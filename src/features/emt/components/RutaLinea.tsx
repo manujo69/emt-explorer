@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Polyline, Marker, useMap } from '@vis.gl/react-google-maps'
+import L from 'leaflet'
+import { Polyline, Marker, useMap } from 'react-leaflet'
 import { useEMTStore, selectLineaSeleccionada, selectSentidosActivos, selectSetParadaSeleccionada } from '../store/emtStore'
 import { useParadas } from '../hooks/useParadas'
 import { useShapes } from '../hooks/useShapes'
@@ -9,6 +10,7 @@ import { snapToPolyline } from '@/shared/utils/snapToPolyline'
 import { catmullRomSmooth } from '@/shared/utils/catmullRomSmooth'
 import { getSentidoColor } from '../utils/lineaColors'
 import type { ParadaEMT } from '../types/emt.types'
+
 const MIN_STOP_PX = 28
 
 function stopIconSize(zoom: number): number {
@@ -58,14 +60,12 @@ export function RutaLinea() {
   const { data: paradas = [] } = useParadas(linea)
   const { data: shapes = {} } = useShapes(linea)
   const map = useMap()
-  const [zoom, setZoom] = useState<number>(() => map?.getZoom() ?? 13)
+  const [zoom, setZoom] = useState<number>(() => map.getZoom())
 
   useEffect(() => {
-    if (!map) return
-    const listener = map.addListener('zoom_changed', () => {
-      setZoom(map.getZoom() ?? 13)
-    })
-    return () => window.google.maps.event.removeListener(listener)
+    const handler = () => setZoom(map.getZoom())
+    map.on('zoomend', handler)
+    return () => { map.off('zoomend', handler) }
   }, [map])
 
   if (!linea || paradas.length === 0) return null
@@ -89,10 +89,10 @@ export function RutaLinea() {
         return (
           <Polyline
             key={`ruta-${sentido}`}
-            path={path}
-            strokeColor={getSentidoColor(linea, sentido)}
-            strokeWeight={6}
-            strokeOpacity={0.7}
+            positions={path.map(p => [p.lat, p.lng] as [number, number])}
+            color={getSentidoColor(linea, sentido)}
+            weight={6}
+            opacity={0.7}
           />
         )
       })}
@@ -107,19 +107,22 @@ export function RutaLinea() {
         const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
           <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 1}" fill="white" stroke="${color}" stroke-width="2"/>
         </svg>`
-        const icon: google.maps.Icon = {
-          url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-          scaledSize: new window.google.maps.Size(size, size),
-          anchor: new window.google.maps.Point(size / 2, size / 2),
-        }
+        const icon = L.divIcon({
+          html: svg,
+          className: '',
+          iconSize: [size, size],
+          iconAnchor: [size / 2, size / 2],
+        })
         return (
           <Marker
             key={`parada-${p.sentido}-${p.codParada}`}
-            position={pos}
-            zIndex={1}
+            position={[pos.lat, pos.lng]}
             title={`${p.codParada} — ${p.nombreParada}`}
             icon={icon}
-            onClick={() => setParadaSeleccionada({ codParada: p.codParada, nombreParada: p.nombreParada, latitud: pos.lat, longitud: pos.lng, sentido: p.sentido })}
+            zIndexOffset={1}
+            eventHandlers={{
+              click: () => setParadaSeleccionada({ codParada: p.codParada, nombreParada: p.nombreParada, latitud: pos.lat, longitud: pos.lng, sentido: p.sentido }),
+            }}
           />
         )
       })}

@@ -1,6 +1,7 @@
 'use client'
 
-import { Marker } from '@vis.gl/react-google-maps'
+import L from 'leaflet'
+import { Marker } from 'react-leaflet'
 import type { BusUbicacion } from '../types/emt.types'
 import { getSentidoColor, getTextColor, getLineaLabel } from '../utils/lineaColors'
 
@@ -17,7 +18,7 @@ function busIconSize(zoom: number): number {
   return 12
 }
 
-function busSvgIcon(color: string, textColor: string, label: string, size: number): google.maps.Icon {
+function busSvgIcon(color: string, textColor: string, label: string, size: number): L.DivIcon {
   const strokeColor = textColor === '#ffffff' ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.55)'
   const fontSize = Math.max(Math.round(size * 0.45), 7)
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
@@ -27,11 +28,12 @@ function busSvgIcon(color: string, textColor: string, label: string, size: numbe
       font-size="${fontSize}" font-weight="700" font-family="ui-sans-serif,system-ui,sans-serif"
     >${label}</text>
   </svg>`
-  return {
-    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-    scaledSize: new window.google.maps.Size(size, size),
-    anchor: new window.google.maps.Point(size / 2, size / 2),
-  }
+  return L.divIcon({
+    html: svg,
+    className: '',
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+  })
 }
 
 export function BusMarker({ bus, zoom }: BusMarkerProps) {
@@ -41,10 +43,10 @@ export function BusMarker({ bus, zoom }: BusMarkerProps) {
 
   return (
     <Marker
-      position={{ lat: bus.latitud, lng: bus.longitud }}
+      position={[bus.latitud, bus.longitud]}
       title={`Bus ${bus.codBus} — Línea ${bus.codLinea}`}
       icon={busSvgIcon(color, textColor, getLineaLabel(bus.codLinea), size)}
-      zIndex={10}
+      zIndexOffset={10}
     />
   )
 }

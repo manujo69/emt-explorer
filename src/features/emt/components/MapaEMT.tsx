@@ -1,12 +1,12 @@
 'use client'
 
+import 'leaflet/dist/leaflet.css'
 import { useEffect, useState } from 'react'
-import { APIProvider, Map, useMap } from '@vis.gl/react-google-maps'
+import { MapContainer, TileLayer, useMap } from 'react-leaflet'
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner'
 import { ErrorMessage } from '@/shared/components/ErrorMessage'
 import { formatErrorMessage } from '@/shared/utils/formatErrorMessage'
 import { useEMTStore, selectLineaSeleccionada, selectSentidosActivos } from '../store/emtStore'
-import MAP_STYLES from '../utils/mapStyles'
 import { useUbicaciones } from '../hooks/useUbicaciones'
 import { useShapes } from '../hooks/useShapes'
 import { snapToPolyline } from '@/shared/utils/snapToPolyline'
@@ -15,8 +15,10 @@ import { RutaLinea } from './RutaLinea'
 import { ParadaModal } from './ParadaModal'
 import { MapCameraController } from './MapCameraController'
 
-const MALAGA_CENTER = { lat: 36.7213, lng: -4.4214 }
+const MALAGA_CENTER: [number, number] = [36.7213, -4.4214]
 const INITIAL_ZOOM = 13
+const CARTO_POSITRON_URL = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+const CARTO_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
 
 function BusMarkersLayer() {
   const linea = useEMTStore(selectLineaSeleccionada)
@@ -24,14 +26,12 @@ function BusMarkersLayer() {
   const { data: rawBuses = [] } = useUbicaciones(linea)
   const { data: shapes = {} } = useShapes(linea)
   const map = useMap()
-  const [zoom, setZoom] = useState<number>(() => map?.getZoom() ?? INITIAL_ZOOM)
+  const [zoom, setZoom] = useState<number>(() => map.getZoom())
 
   useEffect(() => {
-    if (!map) return
-    const listener = map.addListener('zoom_changed', () => {
-      setZoom(map.getZoom() ?? INITIAL_ZOOM)
-    })
-    return () => window.google.maps.event.removeListener(listener)
+    const handler = () => setZoom(map.getZoom())
+    map.on('zoomend', handler)
+    return () => { map.off('zoomend', handler) }
   }, [map])
 
   const buses = rawBuses
@@ -58,20 +58,17 @@ export function MapaEMT() {
 
   return (
     <div className="relative h-full w-full">
-      <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
-        <Map
-          defaultCenter={MALAGA_CENTER}
-          defaultZoom={INITIAL_ZOOM}
-          styles={MAP_STYLES}
-          mapTypeControl={false}
-          className="h-full w-full"
-        >
-          <MapCameraController />
-          <RutaLinea />
-          <BusMarkersLayer />
-          <ParadaModal />
-        </Map>
-      </APIProvider>
+      <MapContainer
+        center={MALAGA_CENTER}
+        zoom={INITIAL_ZOOM}
+        className="h-full w-full"
+      >
+        <TileLayer url={CARTO_POSITRON_URL} attribution={CARTO_ATTRIBUTION} />
+        <MapCameraController />
+        <RutaLinea />
+        <BusMarkersLayer />
+        <ParadaModal />
+      </MapContainer>
 
       {isLoading && (
         <div className="absolute right-2 top-2 rounded-md bg-white p-2 shadow-md">

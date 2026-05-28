@@ -1,11 +1,12 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { LineaSelector, SentidoFilter } from '@/features/emt'
+import { LineaSelector } from '@/features/emt/components/LineaSelector'
+import { SentidoFilter } from '@/features/emt/components/SentidoFilter'
 import { MapSkeleton } from '@/shared/components/MapSkeleton'
 
 const MapaEMT = dynamic(
-  () => import('@/features/emt').then(m => m.MapaEMT),
+  () => import('@/features/emt/components/MapaEMT').then(m => m.MapaEMT),
   { loading: () => <MapSkeleton />, ssr: false },
 )
 

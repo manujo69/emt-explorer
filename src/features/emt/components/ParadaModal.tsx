@@ -1,6 +1,6 @@
 'use client'
 
-import { InfoWindow } from '@vis.gl/react-google-maps'
+import { Popup } from 'react-leaflet'
 import { useEMTStore, selectParadaSeleccionada, selectSetParadaSeleccionada, selectLineaSeleccionada } from '../store/emtStore'
 import { useLlegadas } from '../hooks/useLlegadas'
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner'
@@ -30,17 +30,18 @@ export function ParadaModal() {
   if (!parada) return null
 
   return (
-    <InfoWindow
-      position={{ lat: parada.latitud, lng: parada.longitud }}
-      pixelOffset={[0, -20]}
-      onCloseClick={() => setParadaSeleccionada(null)}
-      headerContent={
-        <div>
-          <p className="text-xs font-mono text-gray-500">Parada {parada.codParada}</p>
-          <p className="text-sm font-semibold text-gray-900 leading-tight">{parada.nombreParada}</p>
-        </div>
-      }
+    <Popup
+      key={parada.codParada}
+      position={[parada.latitud, parada.longitud]}
+      offset={[0, -20]}
+      autoPan={true}
+      eventHandlers={{ remove: () => setParadaSeleccionada(null) }}
     >
+      <div>
+        <p className="text-xs font-mono text-gray-500">Parada {parada.codParada}</p>
+        <p className="text-sm font-semibold text-gray-900 leading-tight">{parada.nombreParada}</p>
+      </div>
+
       <div className="min-w-48">
         {isLoading && (
           <div className="flex justify-center py-2">
@@ -62,22 +63,22 @@ export function ParadaModal() {
             const bg = getLineaColor(ll.codLinea)
             const textColor = getTextColor(bg)
             return (
-            <div
-              key={`${ll.codLinea}-${ll.sentido}`}
-              className="flex items-center gap-3 py-1.5"
-            >
-              <span
-                style={{ backgroundColor: bg, color: textColor, textShadow: getTextShadow(textColor) }}
-                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold"
+              <div
+                key={`${ll.codLinea}-${ll.sentido}`}
+                className="flex items-center gap-3 py-1.5"
               >
-                {getLineaLabel(ll.codLinea)}
-              </span>
-              <span className="flex-1 truncate text-sm text-gray-700">{getDestinoDisplay(ll.codLinea, ll.destino)}</span>
-              <span className="shrink-0 text-sm font-semibold text-gray-900">
-                {formatMinutos(ll.proximoBus.minutos)}
-              </span>
-            </div>
-          )
+                <span
+                  style={{ backgroundColor: bg, color: textColor, textShadow: getTextShadow(textColor) }}
+                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold"
+                >
+                  {getLineaLabel(ll.codLinea)}
+                </span>
+                <span className="flex-1 truncate text-sm text-gray-700">{getDestinoDisplay(ll.codLinea, ll.destino)}</span>
+                <span className="shrink-0 text-sm font-semibold text-gray-900">
+                  {formatMinutos(ll.proximoBus.minutos)}
+                </span>
+              </div>
+            )
           }
 
           return (
@@ -91,6 +92,6 @@ export function ParadaModal() {
           )
         })()}
       </div>
-    </InfoWindow>
+    </Popup>
   )
 }
