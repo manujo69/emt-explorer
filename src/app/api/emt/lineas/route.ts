@@ -13,7 +13,7 @@ export async function GET(): Promise<NextResponse> {
       )
     }
 
-    const LINEAS_EXCLUIDAS = new Set(['92', '93'])
+    const LINEAS_EXCLUIDAS = new Set(['91', '92', '93'])
 
     const csv = await res.text()
     const lineas = parseLineasCSV(csv)
