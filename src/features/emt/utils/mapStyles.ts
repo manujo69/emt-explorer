@@ -12,7 +12,7 @@ const MAP_STYLES: google.maps.MapTypeStyle[] = [
   { featureType: 'road.arterial', elementType: 'geometry.stroke', stylers: [{ color: '#d4d4d4' }] },
   { featureType: 'road.highway',  elementType: 'geometry.fill',   stylers: [{ color: '#b8b8b8' }] },
   { featureType: 'road.highway',  elementType: 'geometry.stroke', stylers: [{ color: '#c8c8c8' }] },
-  { featureType: 'road.local',    elementType: 'labels',          stylers: [{ visibility: 'off' }] },
+  { featureType: 'road.local',    elementType: 'labels',          stylers: [{ visibility: 'on' }] },
 
   // Transporte público
   { featureType: 'transit.station', elementType: 'labels', stylers: [{ visibility: 'off' }] },

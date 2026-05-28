@@ -6,6 +6,12 @@ import { useLlegadas } from '../hooks/useLlegadas'
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner'
 import { getLineaColor, getTextColor, getTextShadow, getLineaLabel } from '../utils/lineaColors'
 
+function getDestinoDisplay(codLinea: string, destino: string): string {
+  if (destino) return destino
+  if (codLinea === 'N2') return 'Nocturno 2'
+  return `Circular ${codLinea}`
+}
+
 function formatMinutos(min: number): string {
   if (min < 60) return `${min} min`
   const days = Math.floor(min / 1440)
@@ -66,7 +72,7 @@ export function ParadaModal() {
               >
                 {getLineaLabel(ll.codLinea)}
               </span>
-              <span className="flex-1 truncate text-sm text-gray-700">{ll.destino}</span>
+              <span className="flex-1 truncate text-sm text-gray-700">{getDestinoDisplay(ll.codLinea, ll.destino)}</span>
               <span className="shrink-0 text-sm font-semibold text-gray-900">
                 {formatMinutos(ll.proximoBus.minutos)}
               </span>

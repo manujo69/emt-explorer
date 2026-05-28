@@ -63,6 +63,7 @@ export function MapaEMT() {
           defaultCenter={MALAGA_CENTER}
           defaultZoom={INITIAL_ZOOM}
           styles={MAP_STYLES}
+          mapTypeControl={false}
           className="h-full w-full"
         >
           <MapCameraController />

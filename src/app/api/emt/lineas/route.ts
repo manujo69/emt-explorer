@@ -13,8 +13,11 @@ export async function GET(): Promise<NextResponse> {
       )
     }
 
+    const LINEAS_EXCLUIDAS = new Set(['92', '93'])
+
     const csv = await res.text()
     const lineas = parseLineasCSV(csv)
+      .filter(l => !LINEAS_EXCLUIDAS.has(l.codLinea))
     lineas.sort((a, b) => a.codLinea.localeCompare(b.codLinea))
 
     return NextResponse.json(lineas)
