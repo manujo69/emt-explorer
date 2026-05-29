@@ -51,10 +51,24 @@ export function SentidoFilter() {
 
   const { cabeceraIda = '', cabeceraVuelta = '' } = lineaData
 
+  const sentidos = [
+    { sentido: 2, label: cabeceraIda },
+    { sentido: 1, label: cabeceraVuelta },
+  ].filter(({ label }) => label.trim() !== '')
+
+  if (sentidos.length < 2) return null
+
   return (
     <div className="flex flex-col gap-2.5">
-      <SentidoRow color={getSentidoColor(linea, 2)} label={cabeceraIda} active={sentidosActivos.includes(2)} onToggle={() => toggleSentido(2)} />
-      <SentidoRow color={getSentidoColor(linea, 1)} label={cabeceraVuelta} active={sentidosActivos.includes(1)} onToggle={() => toggleSentido(1)} />
+      {sentidos.map(({ sentido, label }) => (
+        <SentidoRow
+          key={sentido}
+          color={getSentidoColor(linea, sentido)}
+          label={label}
+          active={sentidosActivos.includes(sentido)}
+          onToggle={() => toggleSentido(sentido)}
+        />
+      ))}
     </div>
   )
 }

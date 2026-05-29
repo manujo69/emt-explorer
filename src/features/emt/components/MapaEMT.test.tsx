@@ -7,19 +7,19 @@ import { createQueryWrapper } from '@/test/queryWrapper'
 import { useEMTStore } from '../store/emtStore'
 import { MapaEMT } from './MapaEMT'
 
-vi.mock('react-leaflet', () => ({
-  MapContainer: ({ children }: { children: React.ReactNode }) => <div data-testid="google-map">{children}</div>,
-  TileLayer: () => null,
-  Marker: ({ title, children }: { title?: string; children?: React.ReactNode }) => (
-    <div data-testid="bus-marker" aria-label={title ?? ''}>{children}</div>
+vi.mock('react-map-gl/maplibre', () => ({
+  default: ({ children }: { children: React.ReactNode }) => <div data-testid="google-map">{children}</div>,
+  Marker: ({ children }: { children?: React.ReactNode }) => (
+    <div data-testid="bus-marker">{children}</div>
   ),
-  Polyline: () => null,
   Popup: () => null,
-  useMap: () => ({ getZoom: () => 13, on: () => {}, off: () => {}, fitBounds: () => {} }),
+  Source: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
+  Layer: () => null,
+  useMap: () => ({ main: { fitBounds: () => {}, getZoom: () => 13, getStyle: () => ({ layers: [] }), setLayoutProperty: () => {}, on: () => {}, off: () => {} } }),
 }))
 
-vi.mock('leaflet', () => ({
-  default: { divIcon: () => ({}), latLngBounds: () => ({}) },
+vi.mock('maplibre-gl', () => ({
+  default: {},
 }))
 
 function makeBus(codBus: string, codLinea: string, lat = 36.7, lng = -4.4) {

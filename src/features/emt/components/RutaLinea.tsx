@@ -1,8 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import L from 'leaflet'
-import { Polyline, Marker, useMap } from 'react-leaflet'
+import { Source, Layer, Marker } from 'react-map-gl/maplibre'
 import { useEMTStore, selectLineaSeleccionada, selectSentidosActivos, selectSetParadaSeleccionada } from '../store/emtStore'
 import { useParadas } from '../hooks/useParadas'
 import { useShapes } from '../hooks/useShapes'
@@ -53,20 +51,16 @@ function thinParadas(paradas: ParadaEMT[], zoom: number): ParadaEMT[] {
   return result
 }
 
-export function RutaLinea() {
+interface RutaLineaProps {
+  zoom: number
+}
+
+export function RutaLinea({ zoom }: RutaLineaProps) {
   const linea = useEMTStore(selectLineaSeleccionada)
   const sentidosActivos = useEMTStore(selectSentidosActivos)
   const setParadaSeleccionada = useEMTStore(selectSetParadaSeleccionada)
   const { data: paradas = [] } = useParadas(linea)
   const { data: shapes = {} } = useShapes(linea)
-  const map = useMap()
-  const [zoom, setZoom] = useState<number>(() => map.getZoom())
-
-  useEffect(() => {
-    const handler = () => setZoom(map.getZoom())
-    map.on('zoomend', handler)
-    return () => { map.off('zoomend', handler) }
-  }, [map])
 
   if (!linea || paradas.length === 0) return null
 
@@ -86,14 +80,31 @@ export function RutaLinea() {
           ? shapePts!.map(s => ({ lat: s.latitud, lng: s.longitud }))
           : (porSentido.get(sentido) ?? []).map(s => ({ lat: s.latitud, lng: s.longitud }))
         const path = catmullRomSmooth(rawPath, hasShapes ? 4 : 8)
+          .filter(p => isFinite(p.lat) && isFinite(p.lng))
+        if (path.length < 2) return null
+        const color = getSentidoColor(linea, sentido)
+
         return (
-          <Polyline
+          <Source
             key={`ruta-${sentido}`}
-            positions={path.map(p => [p.lat, p.lng] as [number, number])}
-            color={getSentidoColor(linea, sentido)}
-            weight={6}
-            opacity={0.7}
-          />
+            id={`emt-route-${sentido}`}
+            type="geojson"
+            data={{
+              type: 'Feature',
+              geometry: {
+                type: 'LineString',
+                coordinates: path.map(p => [p.lng, p.lat]),
+              },
+              properties: {},
+            }}
+          >
+            <Layer
+              id={`emt-route-layer-${sentido}`}
+              type="line"
+              paint={{ 'line-color': color, 'line-width': 6, 'line-opacity': 0.7 }}
+              layout={{ 'line-join': 'round', 'line-cap': 'round' }}
+            />
+          </Source>
         )
       })}
 
@@ -104,26 +115,36 @@ export function RutaLinea() {
           : { lat: p.latitud, lng: p.longitud }
         const size = stopIconSize(zoom)
         const color = getSentidoColor(linea, p.sentido)
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
-          <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 1}" fill="white" stroke="${color}" stroke-width="2"/>
-        </svg>`
-        const icon = L.divIcon({
-          html: svg,
-          className: '',
-          iconSize: [size, size],
-          iconAnchor: [size / 2, size / 2],
-        })
+
         return (
           <Marker
             key={`parada-${p.sentido}-${p.codParada}`}
-            position={[pos.lat, pos.lng]}
-            title={`${p.codParada} — ${p.nombreParada}`}
-            icon={icon}
-            zIndexOffset={1}
-            eventHandlers={{
-              click: () => setParadaSeleccionada({ codParada: p.codParada, nombreParada: p.nombreParada, latitud: pos.lat, longitud: pos.lng, sentido: p.sentido }),
-            }}
-          />
+            longitude={pos.lng}
+            latitude={pos.lat}
+            onClick={() => setParadaSeleccionada({
+              codParada: p.codParada,
+              nombreParada: p.nombreParada,
+              latitud: pos.lat,
+              longitud: pos.lng,
+              sentido: p.sentido,
+            })}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width={size}
+              height={size}
+              style={{ cursor: 'pointer' }}
+            >
+              <circle
+                cx={size / 2}
+                cy={size / 2}
+                r={size / 2 - 1}
+                fill="white"
+                stroke={color}
+                strokeWidth={2}
+              />
+            </svg>
+          </Marker>
         )
       })}
     </>

@@ -352,12 +352,12 @@ import { format } from 'date-fns'
 ```tsx
 import dynamic from 'next/dynamic'
 
-// Google Maps es pesado — cargarlo solo cuando se necesita
-const MapaGoogle = dynamic(
-  () => import('@/features/emt/components/MapaGoogle'),
+// MapLibre GL no funciona en servidor — cargarlo solo en el cliente
+const MapaEMT = dynamic(
+  () => import('@/features/emt/components/MapaEMT').then(m => m.MapaEMT),
   {
     loading: () => <MapSkeleton />,
-    ssr: false, // Google Maps no funciona en servidor
+    ssr: false,
   }
 )
 ```
@@ -593,7 +593,7 @@ describe('useCounter', () => {
 
 **Performance — bundle**
 - [ ] Imports directos de librerías (no barrel cuando el tamaño importa)
-- [ ] `next/dynamic` con `ssr: false` para componentes que no funcionan en servidor (Google Maps)
+- [ ] `next/dynamic` con `ssr: false` para componentes que no funcionan en servidor (mapa vectorial — MapLibre GL)
 - [ ] Librerías de analytics/tracking cargadas después de hidratación
 
 **Performance — async**

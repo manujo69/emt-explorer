@@ -10,5 +10,6 @@ export function useShapes(linea: string | null) {
     queryFn: () => fetchShapes(linea!),
     enabled: Boolean(linea),
     staleTime: 1_800_000,
+    retry: 2,
   })
 }

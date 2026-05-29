@@ -1,1 +1,38 @@
 @import "tailwindcss";
+
+/* MapLibre GL popup overrides */
+.maplibregl-popup {
+  z-index: 20;
+}
+
+.maplibregl-popup-close-button {
+  width: 28px;
+  height: 28px;
+  font-size: 22px;
+  line-height: 1;
+  right: 4px;
+  top: 4px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.maplibregl-popup-close-button:hover {
+  background-color: #f3f4f6;
+}
+
+/* Fix gap between content box and triangle tip */
+.maplibregl-popup-anchor-bottom .maplibregl-popup-tip,
+.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip,
+.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip {
+  margin-top: -1px;
+}
+
+.maplibregl-popup-anchor-top .maplibregl-popup-tip,
+.maplibregl-popup-anchor-top-left .maplibregl-popup-tip,
+.maplibregl-popup-anchor-top-right .maplibregl-popup-tip {
+  margin-bottom: -1px;
+}

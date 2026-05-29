@@ -16,7 +16,7 @@ Visor en tiempo real de la flota de autobuses de la EMT de Málaga. Muestra la p
 - **React 19** + **TypeScript** estricto
 - **Zustand** — estado global
 - **TanStack Query v5** — fetching y caché
-- **Google Maps** (`@vis.gl/react-google-maps`)
+- **MapLibre GL** + **react-map-gl** — mapa vectorial con tiles de [OpenFreeMap](https://openfreemap.org) (estilo Bright, sin API key)
 - **Tailwind CSS v4**
 - **Vitest** + **React Testing Library** + **MSW**
 
@@ -38,14 +38,11 @@ Los datos del Ayuntamiento de Málaga tienen restricciones CORS, así que el fro
 # Instalar dependencias
 npm install
 
-# Crear .env.local con tu clave de Google Maps
-echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=tu_clave" > .env.local
-
 # Arrancar en desarrollo
 npm run dev
 ```
 
-La primera vez que hagas `npm run build`, el script `download-gtfs.mjs` descarga automáticamente los datos GTFS de Málaga.
+No se necesita ninguna API key. La primera vez que hagas `npm run build`, el script `download-gtfs.mjs` descarga automáticamente los datos GTFS de Málaga.
 
 ## Tests
 

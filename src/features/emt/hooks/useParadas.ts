@@ -10,6 +10,6 @@ export function useParadas(linea: string | null) {
     queryFn: () => fetchParadas(linea!),
     enabled: Boolean(linea),
     staleTime: 3_600_000,
-    retry: 1,
+    retry: 2,
   })
 }

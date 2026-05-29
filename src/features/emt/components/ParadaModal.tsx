@@ -1,6 +1,6 @@
 'use client'
 
-import { Popup } from 'react-leaflet'
+import { Popup } from 'react-map-gl/maplibre'
 import { useEMTStore, selectParadaSeleccionada, selectSetParadaSeleccionada, selectLineaSeleccionada } from '../store/emtStore'
 import { useLlegadas } from '../hooks/useLlegadas'
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner'
@@ -9,6 +9,7 @@ import { getLineaColor, getTextColor, getTextShadow, getLineaLabel } from '../ut
 function getDestinoDisplay(codLinea: string, destino: string): string {
   if (destino) return destino
   if (codLinea === 'N2') return 'Nocturno 2'
+  if (codLinea === '29') return 'Jarazmin'
   return `Circular ${codLinea}`
 }
 
@@ -32,10 +33,11 @@ export function ParadaModal() {
   return (
     <Popup
       key={parada.codParada}
-      position={[parada.latitud, parada.longitud]}
-      offset={[0, -20]}
-      autoPan={true}
-      eventHandlers={{ remove: () => setParadaSeleccionada(null) }}
+      longitude={parada.longitud}
+      latitude={parada.latitud}
+      offset={20}
+      onClose={() => setParadaSeleccionada(null)}
+      closeOnClick={false}
     >
       <div>
         <p className="text-xs font-mono text-gray-500">Parada {parada.codParada}</p>

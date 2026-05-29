@@ -23,7 +23,7 @@
 - **TanStack Query v5** para estado servidor / fetching en el cliente.
 - **Tailwind CSS v4** para estilos.
 - **Vitest + React Testing Library** para tests.
-- **Google Maps JavaScript API** para mapas (`@vis.gl/react-google-maps`).
+- **MapLibre GL** + **react-map-gl** para mapas vectoriales con tiles de [OpenFreeMap](https://openfreemap.org). Sin API key.
 
 ### ⚠️ Restricciones de arquitectura
 
@@ -44,8 +44,12 @@ src/
 │   │       │   └── route.ts    # GET /api/emt/ubicaciones?linea=X
 │   │       ├── lineas/
 │   │       │   └── route.ts    # GET /api/emt/lineas
-│   │       └── paradas/
-│   │           └── route.ts    # GET /api/emt/paradas?linea=X
+│   │       ├── paradas/
+│   │       │   └── route.ts    # GET /api/emt/paradas?linea=X
+│   │       ├── llegadas/
+│   │       │   └── route.ts    # GET /api/emt/llegadas?parada=X
+│   │       └── shapes/
+│   │           └── route.ts    # GET /api/emt/shapes?linea=X
 │   ├── layout.tsx              # Root layout — providers globales
 │   ├── page.tsx                # Página principal
 │   └── globals.css
@@ -228,7 +232,7 @@ const { lineaSeleccionada } = useEMTStore()
 ### Bundle
 
 - **Imports directos** de librerías, no desde barrel cuando el tamaño importa.
-- **`next/dynamic` con `ssr: false`** para Google Maps y cualquier componente que no funcione en servidor.
+- **`next/dynamic` con `ssr: false`** para el mapa (MapLibre GL no funciona en servidor) y cualquier componente que requiera APIs de browser.
 - **Librerías de analytics/tracking** cargadas con `import()` dinámico dentro de `useEffect`.
 
 ---
@@ -312,7 +316,7 @@ expect(wrapper.find('.btn-primary')).toHaveLength(1)
 - [ ] `startTransition` para actualizaciones no urgentes si aplica
 
 **Performance — bundle**
-- [ ] `next/dynamic` con `ssr: false` para Google Maps
+- [ ] `next/dynamic` con `ssr: false` para el mapa (MapLibre GL)
 - [ ] Sin imports de barrel en rutas críticas
 
 **Performance — async**
