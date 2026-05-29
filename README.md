@@ -2,7 +2,7 @@
 
 Visor en tiempo real de la flota de autobuses de la EMT de Málaga. Muestra la posición de los buses, las paradas y los tiempos de llegada estimados sobre un mapa interactivo.
 
-[▶ Ver EMT-Explorer en Vercel](https://emt-explorer-mb95.vercel.app/)
+<a href="https://emt-explorer-mb95.vercel.app/" target="_blank" rel="noopener noreferrer">▶ Ver EMT-Explorer en Vercel</a>
 
 ## Qué hace
 
