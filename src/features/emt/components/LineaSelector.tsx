@@ -72,7 +72,7 @@ export function LineaSelector() {
       aria-label="Seleccionar línea de autobús"
       value={lineaSeleccionada ?? ''}
       onChange={handleChange}
-      className="mr-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+      className="flex-1 min-w-0 mr-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
     >
       <option value="">-- Selecciona una línea --</option>
       {sortLineas(lineas).map(l => (
