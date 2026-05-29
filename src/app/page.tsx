@@ -1,5 +1,3 @@
-'use client'
-
 import dynamic from 'next/dynamic'
 import { LineaSelector } from '@/features/emt/components/LineaSelector'
 import { SentidoFilter } from '@/features/emt/components/SentidoFilter'
