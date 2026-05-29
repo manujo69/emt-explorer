@@ -2,6 +2,10 @@
 
 Visor en tiempo real de la flota de autobuses de la EMT de Málaga. Muestra la posición de los buses, las paradas y los tiempos de llegada estimados sobre un mapa interactivo.
 
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/manujo69/emt-explorer)
+
+> **Nota:** StackBlitz funciona correctamente en **Chrome** y **Edge**. En Safari las peticiones de red desde el WebContainer pueden fallar.
+
 ## Qué hace
 
 - Selecciona una línea y filtra por sentido (ida / vuelta)
