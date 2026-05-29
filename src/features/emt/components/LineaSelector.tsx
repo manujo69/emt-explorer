@@ -4,10 +4,17 @@ import { startTransition } from 'react'
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner'
 import { ErrorMessage } from '@/shared/components/ErrorMessage'
 import { formatErrorMessage } from '@/shared/utils/formatErrorMessage'
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery'
 import { useLineas } from '../hooks/useLineas'
 import { useEMTStore, selectLineaSeleccionada, selectSetLineaSeleccionada } from '../store/emtStore'
 import { getLineaLabel } from '../utils/lineaColors'
 import type { LineaEMT } from '../types/emt.types'
+
+function truncarNombre(texto: string, max: number): string {
+  if (texto.length <= max) return texto
+  const corte = texto.slice(0, max).lastIndexOf(' ')
+  return (corte > 0 ? texto.slice(0, corte) : texto.slice(0, max)) + '…'
+}
 
 function lineaGroup(label: string): number {
   if (/^N\d+$/.test(label)) return 3
@@ -31,6 +38,7 @@ function sortLineas(lineas: LineaEMT[]): LineaEMT[] {
 }
 
 export function LineaSelector() {
+  const isMobile = useMediaQuery('(max-width: 639px)')
   const { data: lineas, isLoading, error, refetch } = useLineas()
   const lineaSeleccionada = useEMTStore(selectLineaSeleccionada)
   const setLinea = useEMTStore(selectSetLineaSeleccionada)
@@ -64,12 +72,12 @@ export function LineaSelector() {
       aria-label="Seleccionar línea de autobús"
       value={lineaSeleccionada ?? ''}
       onChange={handleChange}
-      className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+      className="mr-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
     >
       <option value="">-- Selecciona una línea --</option>
       {sortLineas(lineas).map(l => (
         <option key={l.codLinea} value={l.codLinea}>
-          {getLineaLabel(l.codLinea, l.nombreLinea)} — {l.nombreLinea}
+          {getLineaLabel(l.codLinea, l.nombreLinea)} — {isMobile ? truncarNombre(l.nombreLinea, 35) : l.nombreLinea}
         </option>
       ))}
     </select>
