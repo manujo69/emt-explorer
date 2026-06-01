@@ -770,3 +770,37 @@ export function Providers({ children }: { children: React.ReactNode }) {
 ```
 
 El `QueryClient` se crea fuera del componente para garantizar que es un singleton. No se necesita ningún proveedor de mapas a nivel global, ya que MapLibre GL se instancia dentro del propio `<Map>`.
+
+---
+
+## Deployment (Vercel)
+
+### Región obligatoria: `cdg1` (París)
+
+El servidor `emtmalaga.es` bloquea conexiones desde IPs de EEUU. La región por defecto de Vercel (`iad1`, Washington DC) provoca un error de red (`fetch failed`) en `fetchLlegadasEMT`, activando silenciosamente el fallback haversine.
+
+**Solución:** `vercel.json` en la raíz del proyecto:
+
+```json
+{ "regions": ["cdg1"] }
+```
+
+- `mad1` (Madrid) **no es una región válida** de Vercel — se ignora sin error.
+- Regiones europeas válidas: `cdg1` (París), `fra1` (Frankfurt), `lhr1` (Londres).
+- Verificar con el header `x-vercel-id` de la respuesta: `cdg1::cdg1::...` = función en Europa ✓ / `cdg1::iad1::...` = función en EEUU ✗.
+
+### API Routes en tiempo real
+
+Sin configuración explícita Vercel puede cachear respuestas en su CDN. Las rutas dinámicas requieren:
+
+```ts
+export const dynamic = 'force-dynamic'
+```
+
+Y en cada `NextResponse.json(...)`:
+
+```ts
+{ headers: { 'Cache-Control': 'no-store' } }
+```
+
+`cache: 'no-store'` en el `fetch()` interno solo afecta a ese fetch saliente, no a la respuesta que devuelve la API Route al cliente.

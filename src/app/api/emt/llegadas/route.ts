@@ -54,7 +54,6 @@ async function fetchLlegadasEMT(codParada: string): Promise<LlegadaLinea[]> {
   })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   const html = await res.text()
-  console.log('[llegadas] EMT HTML preview:', html.substring(0, 500))
   return parseInformacionParadaHTML(html)
 }
 
@@ -179,19 +178,18 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     )
   }
 
-  let _debug = 'emt-empty'
   try {
     const llegadas = await fetchLlegadasEMT(parada)
     if (llegadas.length > 0) {
-      return NextResponse.json(llegadas, { headers: { 'Cache-Control': 'no-store', 'X-Source': 'emt' } })
+      return NextResponse.json(llegadas, { headers: { 'Cache-Control': 'no-store' } })
     }
   } catch (err) {
-    _debug = err instanceof Error ? err.message : String(err)
+    console.warn(`[llegadas] parada=${parada} EMT fetch failed, using haversine fallback:`, err)
   }
 
   try {
     const llegadas = await calcularLlegadasHaversine(parada)
-    return NextResponse.json(llegadas, { headers: { 'Cache-Control': 'no-store', 'X-Source': `haversine:${_debug}` } })
+    return NextResponse.json(llegadas, { headers: { 'Cache-Control': 'no-store' } })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Error desconocido'
     return NextResponse.json(
