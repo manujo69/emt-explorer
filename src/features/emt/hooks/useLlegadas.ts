@@ -10,7 +10,7 @@ export function useLlegadas(codParada: string | null) {
     queryFn: () => fetchLlegadas(codParada!),
     enabled: Boolean(codParada),
     refetchInterval: 30_000,
-    staleTime: 25_000,
+    staleTime: 0,
     retry: 1,
   })
 }

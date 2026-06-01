@@ -61,6 +61,12 @@ const LINEA_LABEL: Record<string, string> = {
   '76': 'C6', '78': 'C8',
 }
 
+/**
+ * Gets the label for a given line code and name
+ * @param codLinea 
+ * @param nombreLinea 
+ * @returns 
+ */
 export function getLineaLabel(codLinea: string, nombreLinea?: string): string {
   if (LINEA_LABEL[codLinea]) return LINEA_LABEL[codLinea]
   if (nombreLinea) {
@@ -104,12 +110,22 @@ export function getSentidoColor(codLinea: string | null, sentido: number): strin
   return sentido === 1 ? darken(base, 0.3) : base
 }
 
+/**
+ * Gets a text shadow color that contrasts with the given text color for better readability
+ * @param textColor 
+ * @returns 
+ */
 export function getTextShadow(textColor: '#ffffff' | '#000000'): string {
   return textColor === '#ffffff'
     ? '0 1px 1px rgba(0,0,0,0.55)'
     : '0 1px 1px rgba(255,255,255,0.55)'
 }
 
+/**
+ * Get black or white text color depending on the background color for better contrast
+ * @param hex 
+ * @returns 
+ */
 export function getTextColor(hex: string): '#ffffff' | '#000000' {
   const [r, g, b] = hexToRgb(hex)
   const toLinear = (c: number) => {
