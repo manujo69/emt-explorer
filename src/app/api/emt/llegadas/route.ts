@@ -46,6 +46,9 @@ function parseInformacionParadaHTML(html: string): LlegadaLinea[] {
 async function fetchLlegadasEMT(codParada: string): Promise<LlegadaLinea[]> {
   const res = await fetch(`${EMT_PARADA_URL}?codParada=${encodeURIComponent(codParada)}`, {
     cache: 'no-store',
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (compatible; emt-explorer/1.0)',
+    },
   })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   const html = await res.text()
