@@ -52,6 +52,7 @@ async function fetchLlegadasEMT(codParada: string): Promise<LlegadaLinea[]> {
   })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   const html = await res.text()
+  console.log('[llegadas] EMT HTML preview:', html.substring(0, 500))
   return parseInformacionParadaHTML(html)
 }
 
