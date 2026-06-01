@@ -57,10 +57,12 @@ export function ParadaModal() {
 
         {!isLoading && (() => {
           const selectedLabel = getLineaLabel(lineaSeleccionada ?? '')
-          const seleccionadas = llegadas.filter(ll => getLineaLabel(ll.codLinea) === selectedLabel)
+          const seleccionadas = llegadas
+            .filter(ll => getLineaLabel(ll.codLinea) === selectedLabel)
+            .sort((a, b) => a.proximoBus.minutos - b.proximoBus.minutos)
           const resto = llegadas
             .filter(ll => getLineaLabel(ll.codLinea) !== selectedLabel)
-            .sort((a, b) => Number(a.codLinea) - Number(b.codLinea))
+            .sort((a, b) => a.proximoBus.minutos - b.proximoBus.minutos)
           const renderFila = (ll: typeof llegadas[number]) => {
             const bg = getLineaColor(ll.codLinea)
             const textColor = getTextColor(bg)
