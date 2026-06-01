@@ -4,6 +4,8 @@ import { parseParadasCSV, parseLineasCSV, parseUbicacionesCSV } from '@/shared/u
 import { haversineMeters } from '@/shared/utils/haversine'
 import type { LlegadaLinea } from '@/features/emt/types/emt.types'
 
+export const dynamic = 'force-dynamic'
+
 const VELOCIDAD_M_POR_MIN = 200
 const EMT_PARADA_URL = 'https://www.emtmalaga.es/emt-mobile/informacionParada.html'
 
@@ -181,7 +183,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const llegadas = await fetchLlegadasEMT(parada)
     if (llegadas.length > 0) {
       console.log(`[llegadas] parada=${parada} source=EMT items=${llegadas.length}`, llegadas.map(l => `${l.codLinea}→${l.destino} ${l.proximoBus.minutos}min`))
-      return NextResponse.json(llegadas)
+      return NextResponse.json(llegadas, { headers: { 'Cache-Control': 'no-store' } })
     }
   } catch (err) {
     console.warn(`[llegadas] parada=${parada} EMT fetch failed, using haversine fallback:`, err)
@@ -189,7 +191,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   try {
     const llegadas = await calcularLlegadasHaversine(parada)
-    return NextResponse.json(llegadas)
+    return NextResponse.json(llegadas, { headers: { 'Cache-Control': 'no-store' } })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Error desconocido'
     return NextResponse.json(

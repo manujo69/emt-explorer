@@ -38,11 +38,9 @@ export async function fetchShapes(linea: string): Promise<ShapesByDirection> {
 
 export async function fetchLlegadas(parada: string): Promise<LlegadaLinea[]> {
   const res = await fetch(`/api/emt/llegadas?parada=${encodeURIComponent(parada)}`)
-  console.warn('fetchLlegadas', parada, res)
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
     throw new Error((body as { error?: string }).error ?? `Error ${res.status} al obtener llegadas`)
   }
-  console.warn('fetchLlegadas response:', await res.json())
   return res.json()
 }
